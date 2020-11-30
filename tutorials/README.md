@@ -16,6 +16,12 @@ In the first tutorial, we learned that combining multiple signals will produce a
 
 ### 3. Denoising with mean-smooth filter
 
-How can we apply the simplest filter to perform denoising? Introduce the running mean filter; we can remove noise that is normally distributed relative to the signal of interest.
+Introduce the running mean filter, we learn to apply the simplest filter to perform denoising, we can remove noise that is normally distributed relative to the signal of interest. We will also understand what are edge effects.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/master/tutorials/Denoising%20with%20mean-smooth%20filter.ipynb)
+
+### 4. Denoising with Gaussian-smooth filter
+
+We will look at a slight adaptation of the mean-smooth filter, the Gaussian smoothing filter. This tends to smooth the data to be a bit smoother compared to mean-smooth filter. This does not mean that one is better than the other, it depends on the specific applications. It is important to be aware of different filters type and how to use them.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/master/tutorials/Denoising%20with%20Gaussian-smooth%20filter.ipynb)
