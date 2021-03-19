@@ -1,10 +1,10 @@
 # Python Signal Processing [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
-Signal processing can be daunting; this repository contains tutorials on understanding and applying signal processing using NumPy and PyTorch.
+This repository contains tutorials on understanding and applying signal processing using NumPy and PyTorch.
 
 **splearn** is a package for signal processing and machine learning with Python. It is built on top of [NumPy](https://numpy.org) and [SciPy](https://www.scipy.org), to provide easy to use functions from common signal processing tasks to machine learning. 
 
-## Table of Contents
+## Contents
 
 - [Tutorials](#tutorials)
 - [Getting Started](#getting-started)
@@ -14,7 +14,7 @@ Signal processing can be daunting; this repository contains tutorials on underst
 
 ## Tutorials
 
-We aim to bridge the gap for anyone who are new signal processings to get started, check out the [tutorials](https://github.com/jinglescode/python-signal-processing/tree/main/tutorials) to get started on signal processings.
+Signal processing can be daunting; we aim to bridge the gap for anyone who are new signal processings to get started, check out the [tutorials](https://github.com/jinglescode/python-signal-processing/tree/main/tutorials) to get started on signal processings.
 
 ### 1. Signal composition (time, sampling rate and frequency)
 
@@ -24,27 +24,29 @@ In order to begin the signal processing adventure, we need to understand what we
 
 ### 2. Fourier Transform
 
-In the first tutorial, we learned that combining multiple signals will produce a new signal where all the frequencies are jumbled up. In this tutorial, we will learn about Fourier Transform and how it can take a complex signal and decompose it to the frequencies that made it up.
+Now we know what are signals made of and we learned that combining multiple signals of various frequencies will jumbled up all the frequencies. In this tutorial, we will learn about Fourier Transform and how it can take a complex signal and decompose it to the frequencies that made it up.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Fourier%20Transform.ipynb)
 
 ### 3. Denoising with mean-smooth filter
 
-Introduce the running mean filter, we learn to apply the simplest filter to perform denoising, we can remove noise that is normally distributed relative to the signal of interest. We will also understand what are edge effects.
+We know that signals can be noisy, and this tutorial will focus on removing these noise. We learn to apply the simplest filter to perform denoising, the running mean filter. We will also understand what are edge effects.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Denoising%20with%20mean-smooth%20filter.ipynb)
 
 ### 4. Denoising with Gaussian-smooth filter
 
-We will look at a slight adaptation of the mean-smooth filter, the Gaussian smoothing filter. This tends to smooth the data to be a bit smoother compared to mean-smooth filter. This does not mean that one is better than the other, it depends on the specific applications. It is important to be aware of different filters type and how to use them.
+Next, we will look at a slight adaptation of the mean-smooth filter, the Gaussian smoothing filter. This tends to smooth the data to be a bit smoother compared to mean-smooth filter. This does not mean that one is better than the other, it depends on the specific applications. So, it is important to be aware of different filters type and how to use them.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Denoising%20with%20Gaussian-smooth%20filter.ipynb)
+
+---
 
 ## Getting Started
 
 ### Installation
 
-Currently, this has not been released. Use Git or checkout with SVN, and install the dependencies:
+Currently, this has not been released. Use `git clone`, and install the dependencies:
 
 ```
 git clone https://github.com/jinglescode/python-signal-processing.git
@@ -81,6 +83,8 @@ signal_2d_filtered = butter_bandpass(
     plot_xlim=[3,20]
 )
 ```
+
+---
 
 ## Disclaimer on Datasets
 
