@@ -68,10 +68,10 @@ See [requirements.txt](https://github.com/jinglescode/python-signal-processing/t
 Let's generate a 2D-signal, sampled at 100-Hz. Design and apply a 4th-order bandpass Butterworth filter with a cutoff frequency between 5-Hz and 20-Hz.
 
 ```python
-from splearn.data.generate import signal
+from splearn.data.generate import generate_signal
 from splearn.filter.butter import butter_bandpass
 
-signal_2d = signal(
+signal_2d = generate_signal(
     length_seconds=4, 
     sampling_rate=100, 
     frequencies=[[4,7,11,17,40, 50],[1, 3]],

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def signal(length_seconds, sampling_rate, frequencies, func="sin", add_noise=0, plot=False):
+def generate_signal(length_seconds, sampling_rate, frequencies, func="sin", add_noise=0, plot=False):
     r"""
     Generate a n-D array, `length_seconds` seconds signal at `sampling_rate` sampling rate.
     
@@ -29,13 +29,13 @@ def signal(length_seconds, sampling_rate, frequencies, func="sin", add_noise=0, 
             Generated signal, a numpy array of length `sampling_rate*length_seconds`
 
     Usage:
-        >>> s = signal(length_seconds=4, 
+        >>> s = generate_signal(length_seconds=4, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[2], 
         >>>     plot=True
         >>> )
         >>> 
-        >>> s = signal(length_seconds=4, 
+        >>> s = generate_signal(length_seconds=4, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[1,2], 
         >>>     func="cos", 
@@ -43,7 +43,7 @@ def signal(length_seconds, sampling_rate, frequencies, func="sin", add_noise=0, 
         >>>     plot=True
         >>> )
         >>> 
-        >>> s = signal(length_seconds=3.5, 
+        >>> s = generate_signal(length_seconds=3.5, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[[1,2],[1],[2]],  
         >>>     plot=True
@@ -94,13 +94,13 @@ def signal(length_seconds, sampling_rate, frequencies, func="sin", add_noise=0, 
 
 if __name__ == "__main__":
 
-    s1 = signal(length_seconds=3.5, 
+    s1 = generate_signal(length_seconds=3.5, 
         sampling_rate=100, 
         frequencies=[1,2],  
         plot=True
     )
 
-    s2 = signal(length_seconds=3.5, 
+    s2 = generate_signal(length_seconds=3.5, 
         sampling_rate=100, 
         frequencies=[[1,2],[1],[2]],  
         plot=True

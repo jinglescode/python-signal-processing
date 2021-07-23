@@ -33,9 +33,9 @@ def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
             See https://www.mathworks.com/help/matlab/ref/fft.html.
     
     Usage:
-        >>> from splearn.data.generate import signal
+        >>> from splearn.data.generate import generate_signal
         >>> 
-        >>> s1 = signal(
+        >>> s1 = generate_signal(
         >>>     length_seconds=3.5, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[4,7],  
@@ -85,9 +85,9 @@ def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
 
 if __name__ == "__main__":
     
-    from splearn.data.generate import signal
+    from splearn.data.generate import generate_signal
 
-    s1 = signal(
+    s1 = generate_signal(
         length_seconds=3.5, 
         sampling_rate=100, 
         frequencies=[4,7],  

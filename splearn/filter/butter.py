@@ -41,9 +41,9 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
             Filtered signal that has same shape in input `signal`
 
     Usage:
-        >>> from splearn.data.generate import signal
+        >>> from splearn.data.generate import generate_signal
         >>>
-        >>> signal_1d = signal(
+        >>> signal_1d = generate_signal(
         >>>     length_seconds=4, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[4,7,11,17,40, 50],
@@ -51,7 +51,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         >>> )
         >>> print('signal_1d.shape', signal_1d.shape)
         >>> 
-        >>> signal_2d = signal(
+        >>> signal_2d = generate_signal(
         >>>     length_seconds=4, 
         >>>     sampling_rate=100, 
         >>>     frequencies=[[4,7,11,17,40, 50],[1, 3]],
@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
     from splearn.data.generate import signal
 
-    signal_1d = signal(
+    signal_1d = generate_signal(
         length_seconds=4, 
         sampling_rate=100, 
         frequencies=[4,7,11,17,40, 50],
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     )
     print('signal_1d.shape', signal_1d.shape)
 
-    signal_2d = signal(
+    signal_2d = generate_signal(
         length_seconds=4, 
         sampling_rate=100, 
         frequencies=[[4,7,11,17,40, 50],[1, 3]],
