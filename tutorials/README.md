@@ -25,3 +25,9 @@ Introduce the running mean filter, we learn to apply the simplest filter to perf
 We will look at a slight adaptation of the mean-smooth filter, the Gaussian smoothing filter. This tends to smooth the data to be a bit smoother compared to mean-smooth filter. This does not mean that one is better than the other, it depends on the specific applications. It is important to be aware of different filters type and how to use them.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Denoising%20with%20Gaussian-smooth%20filter.ipynb)
+
+### 5. Canonical correlation analysis
+
+Canonical correlation analysis (CCA) is applied to analyze the frequency components of a signal. In this tutorials, we use CCA for feature extraction and classification.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Canonical%20Correlation%20Analysis.ipynb)

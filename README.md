@@ -40,6 +40,12 @@ Next, we will look at a slight adaptation of the mean-smooth filter, the Gaussia
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Denoising%20with%20Gaussian-smooth%20filter.ipynb)
 
+### 5. Canonical correlation analysis
+
+Canonical correlation analysis (CCA) is applied to analyze the frequency components of a signal. In this tutorials, we use CCA for feature extraction and classification.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Canonical%20Correlation%20Analysis.ipynb)
+
 ---
 
 ## Getting Started
