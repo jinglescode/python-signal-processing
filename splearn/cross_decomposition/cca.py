@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Canonical Correlation Analysis (CCA). http://en.wikipedia.org/wiki/Canonical_correlation
+"""
 import numpy as np
 from sklearn.metrics import confusion_matrix
 import functools
@@ -78,19 +81,28 @@ def find_correlation_cca(signal, reference_signals):
         reference_signals : ndarray, shape (len(flick_freq),2*num_harmonics,time)
             Required sinusoidal reference templates corresponding to the flicker frequency for SSVEP classification
     Returns:
-        result : array, size: len(flick_freq)
+        result : array, size: (reference_signals.shape[0])
             Probability for each reference signals
+        wx : array, size: (reference_signals.shape[0],signal.shape[0])
+            Wx obtain from CCA
+        wy : array, size: (reference_signals.shape[0],signal.shape[0])
+            Wy obtain from CCA
     Dependencies:
         np : numpy package
         calculate_cca : function
     """
 
     result = np.zeros(reference_signals.shape[0])
+    wx = np.zeros((reference_signals.shape[0],signal.shape[0]))
+    wy = np.zeros((reference_signals.shape[0],reference_signals.shape[1]))
+    
     for freq_idx in range(0, reference_signals.shape[0]):
         dat_y = np.squeeze(reference_signals[freq_idx, :, :]).T
         rho, w_x, w_y = calculate_cca(signal.T, dat_y)
         result[freq_idx] = rho
-    return result
+        wx[freq_idx,:] = w_x
+        wy[freq_idx,:] = w_y
+    return result, wx, wy
 
 
 def perform_cca(signal, reference_frequencies, labels=None):
@@ -110,6 +122,10 @@ def perform_cca(signal, reference_frequencies, labels=None):
             If `labels` are given, `accuracy` denote classification accuracy
         predicted_probabilities : ndarray, size: (classes,)
             Predicted probabilities for each target
+        wx : array, size: (reference_signals.shape[0],signal.shape[0])
+            Wx obtain from CCA
+        wy : array, size: (reference_signals.shape[0],signal.shape[0])
+            Wy obtain from CCA
     Dependencies:
         confusion_matrix : sklearn.metrics.confusion_matrix
         find_correlation_cca : function
@@ -121,6 +137,8 @@ def perform_cca(signal, reference_frequencies, labels=None):
     predicted_class = []
     predicted_probabilities = []
     accuracy = None
+    Wx = []
+    Wy = []
 
     for trial in range(0, signal.shape[0]):
 
@@ -129,10 +147,12 @@ def perform_cca(signal, reference_frequencies, labels=None):
                 actual_class.append(labels[trial])
             tmp_signal = signal[trial, :, :]
 
-            result = find_correlation_cca(tmp_signal, reference_frequencies)
+            result, wx, wy = find_correlation_cca(tmp_signal, reference_frequencies)
             predicted_class.append(np.argmax(result))
             result = np.around(result, decimals=3, out=None)
             predicted_probabilities.append(result)
+            Wx.append(wx)
+            Wy.append(wy)
 
         if len(signal.shape) == 4:
             for segment in range(0, signal.shape[2]):
@@ -141,10 +161,12 @@ def perform_cca(signal, reference_frequencies, labels=None):
                     actual_class.append(labels[trial])
                 tmp_signal = signal[trial, :, segment, :]
 
-                result = find_correlation_cca(tmp_signal, reference_frequencies)
+                result, wx, wy = find_correlation_cca(tmp_signal, reference_frequencies)
                 predicted_class.append(np.argmax(result))
                 result = np.around(result, decimals=3, out=None)
                 predicted_probabilities.append(result)
+                Wx.append(wx)
+                Wy.append(wy)
 
     actual_class = np.array(actual_class)
     predicted_class = np.array(predicted_class)
@@ -154,5 +176,8 @@ def perform_cca(signal, reference_frequencies, labels=None):
         c_mat = confusion_matrix(actual_class, predicted_class)
         # computing the accuracy from the confusion matrix
         accuracy = np.divide(np.trace(c_mat), np.sum(np.sum(c_mat)))
-
-    return predicted_class, accuracy, predicted_probabilities
+    
+    Wx = np.array(Wx)
+    Wy = np.array(Wy)
+    
+    return predicted_class, accuracy, predicted_probabilities, Wx, Wy

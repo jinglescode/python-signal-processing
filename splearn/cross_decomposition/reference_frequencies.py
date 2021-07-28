@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Generate sinusoidal signals for CCA.
+"""
 import numpy as np
 
 
