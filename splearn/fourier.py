@@ -15,7 +15,7 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
                 https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     
     Args:
-        signal : ndarray, shape (time,) or (channel,time)
+        signal : ndarray, shape (time,) or (channel,time) or (trial,channel,time)
             Single input signal in time domain
         sampling_rate: int
             Sampling frequency
@@ -71,17 +71,35 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
                 fft_p1 = np.zeros((signal.shape[0], fft_c.shape[0]))
 
             fft_p1[ch] = fft_c
-        
+    
+    if len(signal.shape) == 3:
+        for trial in range(signal.shape[0]):
+            for ch in range(signal.shape[1]):
+                fft_c = _fast_fourier_transform(signal[trial, ch, :], sampling_rate=sampling_rate)
+
+                if fft_p1 is None:
+                    fft_p1 = np.zeros((signal.shape[0], signal.shape[1], fft_c.shape[0]))
+                
+                fft_p1[trial,ch,:] = fft_c
+    
     if plot:
         figure(figsize=(10, 5), dpi=80)
-        signal_length = signal.shape[ len(signal.shape)-1 ]
         
+        signal_length = signal.shape[ len(signal.shape)-1 ]
         f = sampling_rate*np.arange(0, (signal_length/2)+1)/signal_length
-
-        for c in range(fft_p1.shape[0]):
-            plt.plot(f, fft_p1[c])
-            plt.xlim(plot_xlim)
-
+        
+        if len(fft_p1.shape) == 3:
+            means = np.mean(fft_p1, 0)
+            stds = np.std(fft_p1, 0)
+            for c in range(fft_p1.shape[1]):
+                plt.plot(f, means[c])
+                plt.xlim(plot_xlim)
+                plt.fill_between(f, means[c]-stds[c],means[c]+stds[c],alpha=.1)
+        else:
+            for c in range(fft_p1.shape[0]):
+                plt.plot(f, fft_p1[c])
+                plt.xlim(plot_xlim)
+            
         if plot_ylim is not None:
             plt.ylim(plot_ylim)
 
