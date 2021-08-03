@@ -7,9 +7,9 @@ from scipy.signal import butter, filtfilt, sosfiltfilt, freqz
 from splearn.fourier import fast_fourier_transform
 
 
-def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, plot=False, **kwargs):
+def butter_bandpass(signal, lowcut, highcut, sampling_rate, type="sos", order=4, plot=False, **kwargs):
     r"""
-    Design a `order`th-order bandpass Butterworth filter with a cutoff frequency between `lowcut`-Hz and `highcut`-Hz, which, for data sampled at `sample_rate`-Hz.
+    Design a `order`th-order bandpass Butterworth filter with a cutoff frequency between `lowcut`-Hz and `highcut`-Hz, which, for data sampled at `sampling_rate`-Hz.
 
     Reference:  https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html
                 https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html
@@ -22,7 +22,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
             Lower bound filter
         highcut : int
             Upper bound filter
-        sample_rate : int
+        sampling_rate : int
             Sampling frequency
         type: string, optional, default: sos
             Type of output: numerator/denominator (‘ba’), or second-order sections (‘sos’). 
@@ -66,7 +66,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         >>>     signal=signal_1d, 
         >>>     lowcut=5, 
         >>>     highcut=20, 
-        >>>     sample_rate=100,
+        >>>     sampling_rate=100,
         >>>     plot=True,
         >>> )
         >>> print('signal_1d_filtered.shape', signal_1d_filtered.shape)
@@ -75,7 +75,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         >>>     signal=signal_2d, 
         >>>     lowcut=5, 
         >>>     highcut=20, 
-        >>>     sample_rate=100,
+        >>>     sampling_rate=100,
         >>>     type='sos',
         >>>     order=4, 
         >>>     plot=True,
@@ -87,7 +87,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         >>>     signal=signal_3d, 
         >>>     lowcut=5, 
         >>>     highcut=20, 
-        >>>     sample_rate=100,
+        >>>     sampling_rate=100,
         >>>     type='ba',
         >>>     order=4, 
         >>>     plot=True,
@@ -99,10 +99,10 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
     dim = len(signal.shape)-1
 
     if type == 'ba':
-        b, a = _butter_bandpass(lowcut, highcut, sample_rate, order)
+        b, a = _butter_bandpass(lowcut, highcut, sampling_rate, order)
         y = filtfilt(b, a, signal)
     else:
-        sos = _butter_bandpass(lowcut, highcut, sample_rate,
+        sos = _butter_bandpass(lowcut, highcut, sampling_rate,
                             order=order, output='sos')
         y = sosfiltfilt(sos, signal, axis=dim)
     
@@ -119,16 +119,16 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         if type == 'ba':
             # plot frequency response of filter
             w, h = freqz(b, a)
-            plt.plot((sample_rate * 0.5 / np.pi) * w,
+            plt.plot((sampling_rate * 0.5 / np.pi) * w,
                     abs(h), label="order = %d" % order)
-            plt.plot([0, 0.5 * sample_rate], [np.sqrt(0.5), np.sqrt(0.5)],
+            plt.plot([0, 0.5 * sampling_rate], [np.sqrt(0.5), np.sqrt(0.5)],
                     '--', label='sqrt(0.5)')
             plt.xlabel('Frequency (Hz)')
             plt.ylabel('Gain')
             plt.grid(True)
             plt.legend(loc='best')
-            low = max(0, lowcut-(sample_rate/100))
-            high = highcut+(sample_rate/100)
+            low = max(0, lowcut-(sampling_rate/100))
+            high = highcut+(sampling_rate/100)
             plt.xlim([low, high])
             plt.ylim([0, 1.2])
             plt.title('Frequency response of filter - lowcut:' +
@@ -141,7 +141,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         # frequency domain
         fast_fourier_transform(
             tmp_x, 
-            sample_rate, 
+            sampling_rate, 
             plot=True, 
             plot_xlim=plot_xlim, 
             plot_ylim=plot_ylim,
@@ -149,7 +149,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
         )
         fast_fourier_transform(
             tmp_y, 
-            sample_rate, 
+            sampling_rate, 
             plot=True, 
             plot_xlim=plot_xlim, 
             plot_ylim=plot_ylim,
@@ -163,7 +163,7 @@ def butter_bandpass(signal, lowcut, highcut, sample_rate, type="sos", order=4, p
     return y
 
 
-def _butter_bandpass(lowcut, highcut, sample_rate, order=4, output='ba'):
+def _butter_bandpass(lowcut, highcut, sampling_rate, order=4, output='ba'):
     r"""
     Create a Butterworth bandpass filter. Design an Nth-order digital or analog Butterworth filter and return the filter coefficients.
     Reference:  https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html
@@ -173,7 +173,7 @@ def _butter_bandpass(lowcut, highcut, sample_rate, order=4, output='ba'):
             Lower bound filter
         highcut : int
             Upper bound filter
-        sample_rate : int
+        sampling_rate : int
             Sampling frequency
         order : int, default: 4
             Order of the filter
@@ -186,7 +186,7 @@ def _butter_bandpass(lowcut, highcut, sample_rate, order=4, output='ba'):
     Dependencies:
         butter : scipy.signal.butter
     """
-    nyq = sample_rate * 0.5
+    nyq = sampling_rate * 0.5
     low = lowcut / nyq
     high = highcut / nyq
     return butter(order, [low, high], btype='bandpass', output=output)
@@ -219,7 +219,7 @@ if __name__ == "__main__":
         signal=signal_1d, 
         lowcut=5, 
         highcut=20, 
-        sample_rate=100,
+        sampling_rate=100,
         plot=True,
     )
     print('signal_1d_filtered.shape', signal_1d_filtered.shape)
@@ -228,7 +228,7 @@ if __name__ == "__main__":
         signal=signal_2d, 
         lowcut=5, 
         highcut=20, 
-        sample_rate=100,
+        sampling_rate=100,
         type='sos',
         order=4, 
         plot=True,
@@ -240,7 +240,7 @@ if __name__ == "__main__":
         signal=signal_3d, 
         lowcut=5, 
         highcut=20, 
-        sample_rate=100,
+        sampling_rate=100,
         type='ba',
         order=4, 
         plot=True,

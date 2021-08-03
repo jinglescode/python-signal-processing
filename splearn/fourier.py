@@ -4,9 +4,10 @@
 import numpy as np
 from scipy.fft import fft
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 
 
-def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
+def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
     r"""
     Use Fourier transforms to find the frequency components of a signal buried in noise.
     Reference:  https://www.mathworks.com/help/matlab/ref/fft.html
@@ -14,24 +15,24 @@ def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
                 https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     
     Args:
-        signal : ndarray, shape (time,)
+        signal : ndarray, shape (time,) or (channel,time)
             Single input signal in time domain
-        sample_rate: int
+        sampling_rate: int
             Sampling frequency
         plot : boolean, optional, default: False
             To plot the single-sided amplitude spectrum
-        plot_xlim : array of shape [lower, upper], optional, default: [0, int(`sample_rate`/2)]
+        plot_xlim : array of shape [lower, upper], optional, default: [0, int(`sampling_rate`/2)]
             If `plot=True`, set a limit on the X-axis between lower and upper bound
         plot_ylim : array of shape [lower, upper], optional, default: None
             If `plot=True`, set a limit on the Y-axis between lower and upper bound
         plot_label : string, optional, default: ''
             If `plot=True`, text label for this signal in plot, shown in legend
-            
+        plot_line_freq : float, option, default: None
+            If `plot=True`, plot a vertical line to mark the target frequency
     Returns:
         P1 : ndarray
             Frequency domain. Compute the two-sided spectrum P2. Then compute the single-sided spectrum P1 based on P2 and the even-valued signal length L.
             See https://www.mathworks.com/help/matlab/ref/fft.html.
-    
     Usage:
         >>> from splearn.data.generate import generate_signal
         >>> 
@@ -44,19 +45,74 @@ def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
         >>> 
         >>> p1 = fast_fourier_transform(
         >>>     signal=s1, 
-        >>>     sample_rate=100, 
+        >>>     sampling_rate=100, 
         >>>     plot=True, 
-        >>>     plot_xlim=[0, 10]
+        >>>     plot_xlim=[0, 10],
+        >>>     plot_line_freq=7
         >>> )
-
-    Future plans:
-        - Expand to n-D array
     """
-
-    plot_xlim = kwargs['plot_xlim'] if 'plot_xlim' in kwargs else [0, int(sample_rate/2)]
+    
+    plot_xlim = kwargs['plot_xlim'] if 'plot_xlim' in kwargs else [0, int(sampling_rate/2)]
     plot_ylim = kwargs['plot_ylim'] if 'plot_ylim' in kwargs else None
     plot_label = kwargs['plot_label'] if 'plot_label' in kwargs else ''
+    plot_line_freq = kwargs['plot_line_freq'] if 'plot_line_freq' in kwargs else None
+    
+    fft_p1 = None
+    
+    if len(signal.shape) == 1:
+        fft_p1 = _fast_fourier_transform(signal, sampling_rate)
+        fft_p1 = np.expand_dims(fft_p1,0)
+        
+    if len(signal.shape) == 2:
+        for ch in range(signal.shape[0]):
+            fft_c = _fast_fourier_transform(signal[ch, :], sampling_rate=sampling_rate)
 
+            if fft_p1 is None:
+                fft_p1 = np.zeros((signal.shape[0], fft_c.shape[0]))
+
+            fft_p1[ch] = fft_c
+        
+    if plot:
+        figure(figsize=(10, 5), dpi=80)
+        signal_length = signal.shape[ len(signal.shape)-1 ]
+        
+        f = sampling_rate*np.arange(0, (signal_length/2)+1)/signal_length
+
+        for c in range(fft_p1.shape[0]):
+            plt.plot(f, fft_p1[c])
+            plt.xlim(plot_xlim)
+
+        if plot_ylim is not None:
+            plt.ylim(plot_ylim)
+
+        if plot_label != '':
+            plt.legend()
+
+        if plot_line_freq is not None:
+            plt.axvline(x=plot_line_freq, color='r', linewidth=1.5)
+            
+    return fft_p1
+
+
+def _fast_fourier_transform(signal, sampling_rate):
+    r"""
+    Use Fourier transforms to find the frequency components of a signal buried in noise.
+    Reference:  https://www.mathworks.com/help/matlab/ref/fft.html
+                https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
+                https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
+    Args:
+        signal : ndarray, shape (time,)
+            Single input signal in time domain
+        sampling_rate: int
+            Sampling frequency
+    Returns:
+        P1 : ndarray
+            Frequency domain. Compute the two-sided spectrum P2. Then compute the single-sided spectrum P1 based on P2 and the even-valued signal length L.
+            See https://www.mathworks.com/help/matlab/ref/fft.html.
+    Usage:
+        See fast_fourier_transform
+    """
+    
     signal_length = signal.shape[0]
 
     if signal_length % 2 != 0:
@@ -66,19 +122,6 @@ def fast_fourier_transform(signal, sample_rate, plot=False, **kwargs):
     p2 = np.abs(y/signal_length)
     p1 = p2[0:round(signal_length/2+1)]
     p1[1:-1] = 2*p1[1:-1]
-
-    if plot:
-        f = sample_rate*np.arange(0, (signal_length/2)+1)/signal_length
-        plt.plot(f, p1, label=plot_label)
-        plt.title('Signal in frequency domain after performing FFT')
-        plt.xlabel('Frequencies ('+ " to ".join(map(str, plot_xlim)) +' Hz)')
-        plt.ylabel('Amplitude')
-        plt.xlim(plot_xlim)
-        if plot_ylim is not None:
-            plt.ylim(plot_ylim)
-
-        if plot_label != '':
-            plt.legend()
 
     return p1
 
@@ -96,7 +139,8 @@ if __name__ == "__main__":
 
     p1 = fast_fourier_transform(
         signal=s1, 
-        sample_rate=100, 
+        sampling_rate=100, 
         plot=True, 
-        plot_xlim=[0, 15],
+        plot_xlim=[0, 10],
+        plot_line_freq=7
     )
