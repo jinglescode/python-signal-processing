@@ -4,7 +4,53 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
 import functools
+from ..classes.classifier import Classifier
+from .reference_frequencies import generate_reference_signals
 
+
+class CCA(Classifier):
+    r"""
+    Calculates the canonical correlation coefficient and
+    corresponding weights which maximize a correlation coefficient
+    between linear combinations of the two specified multivariable
+    signals.
+
+    Args:
+        sampling_rate: int
+            Sampling frequency
+        target_frequencies : array
+            Frequencies for SSVEP classification
+        signal_size : int
+            Window/segment length in time samples
+        sampling_rate : int
+            Sampling frequency
+        num_harmonics : int, default: 2
+            Generate till n-th harmonics
+    """
+    def __init__(self, sampling_rate, target_frequencies, signal_size, num_harmonics=2):
+        self.sampling_rate = sampling_rate
+                
+        self.reference_frequencies = generate_reference_signals(
+            target_frequencies, 
+            size=signal_size, 
+            sampling_rate=sampling_rate, 
+            num_harmonics=num_harmonics
+        )
+
+    def predict(self, X):
+        r"""
+        Predict the label for each trial.
+
+        Args:
+            X : ndarray, shape (trial, channels, samples)
+                3-dim signal data by trial
+        Returns:
+            results : array
+                Predicted targets
+        """
+        predicted_class, _, _, _, _ = perform_cca(X, self.reference_frequencies, labels=None)
+        return predicted_class
+    
 
 def calculate_cca(dat_x, dat_y, time_axis=-2):
     r"""
@@ -13,8 +59,6 @@ def calculate_cca(dat_x, dat_y, time_axis=-2):
     corresponding weights which maximize a correlation coefficient
     between linear combinations of the two specified multivariable
     signals.
-    Reference: https://github.com/venthur/wyrm/blob/master/wyrm/processing.py
-    Reference: http://en.wikipedia.org/wiki/Canonical_correlation
     Args:
         dat_x : continuous Data object
             these data should have the same length on the time axis.
@@ -37,6 +81,9 @@ def calculate_cca(dat_x, dat_y, time_axis=-2):
     Dependencies:
         functools : functools package
         np : numpy package
+    Reference:
+        https://github.com/venthur/wyrm/blob/master/wyrm/processing.py
+        http://en.wikipedia.org/wiki/Canonical_correlation
     """
 
     assert (len(dat_x.data.shape) == len(dat_y.data.shape) == 2 and
