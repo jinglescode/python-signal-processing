@@ -161,6 +161,7 @@ class TRCA(Classifier):
 if __name__ == "__main__":
     from splearn.cross_decomposition.trca import TRCA
     from splearn.data.sample_ssvep import SampleSSVEPData
+    from splearn.cross_validate.leave_one_out import leave_one_block_evaluation
     
     data = SampleSSVEPData()
     eeg = data.get_data()
@@ -169,4 +170,4 @@ if __name__ == "__main__":
     print("labels.shape:", labels.shape)
 
     trca_classifier = TRCA(sampling_rate=data.sampling_rate)
-    test_accuracies = trca_classifier.leave_one_block_evaluation(eeg, labels)
+    test_accuracies = leave_one_block_evaluation(trca_classifier, eeg, labels)
