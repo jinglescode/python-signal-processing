@@ -4,15 +4,11 @@
 import numpy as np
 from scipy.fft import fft
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 
 
 def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
     r"""
     Use Fourier transforms to find the frequency components of a signal buried in noise.
-    Reference:  https://www.mathworks.com/help/matlab/ref/fft.html
-                https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
-                https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     
     Args:
         signal : ndarray, shape (time,) or (channel,time) or (trial,channel,time)
@@ -27,12 +23,12 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
             If `plot=True`, set a limit on the Y-axis between lower and upper bound
         plot_label : string, optional, default: ''
             If `plot=True`, text label for this signal in plot, shown in legend
-        plot_line_freq : float, option, default: None
-            If `plot=True`, plot a vertical line to mark the target frequency
+        plot_line_freq : int or float or list, option, default: None
+            If `plot=True`, plot a vertical line to mark the target frequency. If a list is given, will plot multiple lines.
     Returns:
         P1 : ndarray
-            Frequency domain. Compute the two-sided spectrum P2. Then compute the single-sided spectrum P1 based on P2 and the even-valued signal length L.
-            See https://www.mathworks.com/help/matlab/ref/fft.html.
+            Frequency domain. Compute the two-sided spectrum P2. Then compute the single-sided spectrum P1 based on P2 and the even-valued signal length L. 
+            See https://www.mathworks.com/help/matlab/ref/fft.html
     Usage:
         >>> from splearn.data.generate import generate_signal
         >>> 
@@ -50,6 +46,10 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
         >>>     plot_xlim=[0, 10],
         >>>     plot_line_freq=7
         >>> )
+    Reference:  
+        https://www.mathworks.com/help/matlab/ref/fft.html
+        https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     """
     
     plot_xlim = kwargs['plot_xlim'] if 'plot_xlim' in kwargs else [0, int(sampling_rate/2)]
@@ -83,8 +83,6 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
                 fft_p1[trial,ch,:] = fft_c
     
     if plot:
-        figure(figsize=(10, 5), dpi=80)
-        
         signal_length = signal.shape[ len(signal.shape)-1 ]
         f = sampling_rate*np.arange(0, (signal_length/2)+1)/signal_length
         
@@ -107,17 +105,21 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
             plt.legend()
 
         if plot_line_freq is not None:
-            plt.axvline(x=plot_line_freq, color='r', linewidth=1.5)
-            
+            if isinstance(plot_line_freq, list):
+                for i in plot_line_freq:
+                    plt.axvline(x=i, color='r', linewidth=1.5)
+            else:
+                plt.axvline(x=plot_line_freq, color='r', linewidth=1.5)
+    
+    if len(signal.shape) == 1:
+        fft_p1 = fft_p1[0]
+        
     return fft_p1
-
 
 def _fast_fourier_transform(signal, sampling_rate):
     r"""
     Use Fourier transforms to find the frequency components of a signal buried in noise.
-    Reference:  https://www.mathworks.com/help/matlab/ref/fft.html
-                https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
-                https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
+    
     Args:
         signal : ndarray, shape (time,)
             Single input signal in time domain
@@ -129,6 +131,10 @@ def _fast_fourier_transform(signal, sampling_rate):
             See https://www.mathworks.com/help/matlab/ref/fft.html.
     Usage:
         See fast_fourier_transform
+    Reference:  
+        https://www.mathworks.com/help/matlab/ref/fft.html
+        https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     """
     
     signal_length = signal.shape[0]
