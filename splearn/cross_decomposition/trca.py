@@ -5,9 +5,10 @@ import numpy as np
 from scipy.signal import cheb1ord, cheby1, filtfilt
 from scipy.sparse.linalg import eigs
 from sklearn.metrics import accuracy_score
+from ..classes.classifier import Classifier
 
 
-class TRCA():
+class TRCA(Classifier):
     r"""
     Task-related component analysis for frequency classification.
 
