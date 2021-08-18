@@ -3,6 +3,7 @@
 """
 import numpy as np
 from scipy.io import loadmat
+import os
 
 
 class SampleSSVEPData():
@@ -18,14 +19,26 @@ class SampleSSVEPData():
         Length of an epoch : 5 seconds
         Sampling rate : 250 Hz
     Args:
-        path: str
+        path: str, default: None
             Path to ssvepdata.mat file
+    Usage:
+            >>> from splearn.cross_decomposition.trca import TRCA
+            >>> from splearn.data.sample_ssvep import SampleSSVEPData
+            >>> 
+            >>> data = SampleSSVEPData()
+            >>> eeg = data.get_data()
+            >>> labels = data.get_targets()
+            >>> print("eeg.shape:", eeg.shape)
+            >>> print("labels.shape:", labels.shape)
     Reference:
         https://www.pnas.org/content/early/2015/10/14/1508080112.abstract
     """
-    def __init__(self, path="./"):
+    def __init__(self, path=None):
+        if path is None:
+            path = os.path.dirname(os.path.abspath(__file__))
+        
         # Get EEG data
-        data = loadmat(path+"data_ssvep.mat")
+        data = loadmat(path+"/sample/ssvep.mat")
         data = data["eeg"]
         data = data.transpose([3,0,1,2])
         self.data = data
@@ -50,3 +63,13 @@ class SampleSSVEPData():
         Targets shape: (6, 40) [# of blocks, # of targets]
         """
         return self.targets
+
+
+if __name__ == "__main__":
+    from splearn.data.sample_ssvep import SampleSSVEPData
+    
+    data = SampleSSVEPData()
+    eeg = data.get_data()
+    labels = data.get_targets()
+    print("eeg.shape:", eeg.shape)
+    print("labels.shape:", labels.shape)

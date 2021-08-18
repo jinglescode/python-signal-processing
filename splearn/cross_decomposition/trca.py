@@ -170,6 +170,18 @@ class TRCA():
         Returns:
             test_accuracies : list
                 Test accuracies by block
+        Usage:
+            >>> from splearn.cross_decomposition.trca import TRCA
+            >>> from splearn.data.sample_ssvep import SampleSSVEPData
+            >>> 
+            >>> data = SampleSSVEPData()
+            >>> eeg = data.get_data()
+            >>> labels = data.get_targets()
+            >>> print("eeg.shape:", eeg.shape)
+            >>> print("labels.shape:", labels.shape)
+            >>> 
+            >>> trca_classifier = TRCA(sampling_rate=data.sampling_rate)
+            >>> test_accuracies = trca_classifier.leave_one_block_evaluation(eeg, labels)
         """
         
         test_accuracies = []
@@ -221,13 +233,14 @@ class TRCA():
 
 
 if __name__ == "__main__":
+    from splearn.cross_decomposition.trca import TRCA
     from splearn.data.sample_ssvep import SampleSSVEPData
     
     data = SampleSSVEPData()
     eeg = data.get_data()
     labels = data.get_targets()
-    print("eeg.shape", eeg.shape)
-    print("labels.shape", labels.shape)
-    
-    clf = TRCA(sampling_rate=data.sampling_rate)
-    test_accuracies = clf.leave_one_block_evaluation(eeg, labels)
+    print("eeg.shape:", eeg.shape)
+    print("labels.shape:", labels.shape)
+
+    trca_classifier = TRCA(sampling_rate=data.sampling_rate)
+    test_accuracies = trca_classifier.leave_one_block_evaluation(eeg, labels)

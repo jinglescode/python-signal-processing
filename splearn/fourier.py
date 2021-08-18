@@ -31,6 +31,7 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
             See https://www.mathworks.com/help/matlab/ref/fft.html
     Usage:
         >>> from splearn.data.generate import generate_signal
+        >>> from splearn.fourier import fast_fourier_transform
         >>> 
         >>> s1 = generate_signal(
         >>>     length_seconds=3.5, 
@@ -46,10 +47,10 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
         >>>     plot_xlim=[0, 10],
         >>>     plot_line_freq=7
         >>> )
-    Reference:  
-        https://www.mathworks.com/help/matlab/ref/fft.html
-        https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
+    Reference:
+        - https://www.mathworks.com/help/matlab/ref/fft.html
+        - https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
+        - https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     """
     
     plot_xlim = kwargs['plot_xlim'] if 'plot_xlim' in kwargs else [0, int(sampling_rate/2)]
@@ -130,11 +131,11 @@ def _fast_fourier_transform(signal, sampling_rate):
             Frequency domain. Compute the two-sided spectrum P2. Then compute the single-sided spectrum P1 based on P2 and the even-valued signal length L.
             See https://www.mathworks.com/help/matlab/ref/fft.html.
     Usage:
-        See fast_fourier_transform
+        See `fast_fourier_transform`
     Reference:  
-        https://www.mathworks.com/help/matlab/ref/fft.html
-        https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
+        - https://www.mathworks.com/help/matlab/ref/fft.html
+        - https://docs.scipy.org/doc/scipy/reference/tutorial/fft.html
+        - https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fft.html
     """
     
     signal_length = signal.shape[0]
@@ -153,6 +154,7 @@ def _fast_fourier_transform(signal, sampling_rate):
 if __name__ == "__main__":
     
     from splearn.data.generate import generate_signal
+    from splearn.fourier import fast_fourier_transform
 
     s1 = generate_signal(
         length_seconds=3.5, 
