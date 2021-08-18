@@ -46,6 +46,12 @@ Canonical correlation analysis (CCA) is applied to analyze the frequency compone
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Canonical%20Correlation%20Analysis.ipynb)
 
+### 6. Task-related component analysis
+
+Task-related component analysis (TRCA) is a classification method originally for steady-state visual evoked potentials (SSVEPs) detection.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jinglescode/python-signal-processing/blob/main/tutorials/Task-Related%20Component%20Analysis.ipynb)
+
 ---
 
 ## Getting Started
