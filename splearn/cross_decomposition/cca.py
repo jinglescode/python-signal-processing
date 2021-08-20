@@ -36,6 +36,7 @@ class CCA(Classifier):
             sampling_rate=sampling_rate, 
             num_harmonics=num_harmonics
         )
+        self.can_train = False
 
     def predict(self, X):
         r"""

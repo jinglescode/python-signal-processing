@@ -57,6 +57,7 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
     plot_ylim = kwargs['plot_ylim'] if 'plot_ylim' in kwargs else None
     plot_label = kwargs['plot_label'] if 'plot_label' in kwargs else ''
     plot_line_freq = kwargs['plot_line_freq'] if 'plot_line_freq' in kwargs else None
+    plot_label = kwargs['plot_label'] if 'plot_label' in kwargs else ''
     
     fft_p1 = None
     
@@ -91,12 +92,12 @@ def fast_fourier_transform(signal, sampling_rate, plot=False, **kwargs):
             means = np.mean(fft_p1, 0)
             stds = np.std(fft_p1, 0)
             for c in range(fft_p1.shape[1]):
-                plt.plot(f, means[c])
+                plt.plot(f, means[c], label=plot_label)
                 plt.xlim(plot_xlim)
                 plt.fill_between(f, means[c]-stds[c],means[c]+stds[c],alpha=.1)
         else:
             for c in range(fft_p1.shape[0]):
-                plt.plot(f, fft_p1[c])
+                plt.plot(f, fft_p1[c], label=plot_label)
                 plt.xlim(plot_xlim)
             
         if plot_ylim is not None:

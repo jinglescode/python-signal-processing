@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 
 
-def leave_one_block_evaluation(classifier, X, Y):
+def leave_one_block_evaluation(classifier, X, Y, block_seq_labels=None):
     r"""
     Estimate classification performance with a Leave-One-Block-Out cross-validation approach.
     Iteratively select a block for testing and use all other blocks for training.
@@ -12,6 +12,8 @@ def leave_one_block_evaluation(classifier, X, Y):
             4-dim signal data
         Y : ndarray, shape (blocks, targets)
             Targets are int, starts from 0
+        block_seq_labels : list
+            A list of labels for each block
     Returns:
         test_accuracies : list
             Test accuracies by block
@@ -34,13 +36,13 @@ def leave_one_block_evaluation(classifier, X, Y):
     blocks, targets, channels, samples = X.shape
 
     for block_i in range(blocks):
-        train_acc, test_acc = block_evaluation(classifier, X, Y, block_i)
+        test_acc = block_evaluation(classifier, X, Y, block_i, block_seq_labels[block_i] if block_seq_labels is not None else None)
         test_accuracies.append(test_acc)
 
     print(f'Mean test accuracy: {np.array(test_accuracies).mean().round(3)*100}%')
     return test_accuracies
 
-def block_evaluation(classifier, X, Y, block_i):
+def block_evaluation(classifier, X, Y, block_i, block_label=None):
     r"""
     Select a block for testing, use all other blocks for training.
 
@@ -51,6 +53,8 @@ def block_evaluation(classifier, X, Y, block_i):
             Targets are int, starts from 0
         block_i: int
             Index of the selected block for testing
+        block_label : str or int
+            Labels for this block, for printing
     Returns:
         train_acc : float
             Train accuracy
@@ -59,20 +63,30 @@ def block_evaluation(classifier, X, Y, block_i):
     """
 
     blocks, targets, channels, samples = X.shape
-
-    x_train = np.delete(X, block_i, axis=0)
-    x_train = x_train.reshape((blocks-1*targets, channels, samples))
-    y_train = np.delete(Y, block_i, axis=0)
-    y_train = y_train.reshape((blocks-1*targets))
-    classifier.fit(x_train, y_train)
-    p1 = classifier.predict(x_train)
-    train_acc = accuracy_score(y_train, p1)
+    
+    train_acc = 0
+    if classifier.can_train:
+        x_train = np.delete(X, block_i, axis=0)
+        x_train = x_train.reshape((blocks-1*targets, channels, samples))
+        y_train = np.delete(Y, block_i, axis=0)
+        y_train = y_train.reshape((blocks-1*targets))
+        classifier.fit(x_train, y_train)
+#         p1 = classifier.predict(x_train)
+#         train_acc = accuracy_score(y_train, p1)
 
     x_test = X[block_i,:,:,:]
     y_test = Y[block_i]
     p2 = classifier.predict(x_test)
     test_acc = accuracy_score(y_test, p2)
+    
+    if block_label is None:
+        block_label = 'Block:' + str(block_i+1)
+        
+#     if classifier.can_train:
+#         print(f'{block_label} | Train acc: {train_acc*100:.2f}% | Test acc: {test_acc*100:.2f}%')
+#     else:
+#         print(f'{block_label} | Test acc: {test_acc*100:.2f}%')
+        
+    print(f'{block_label} | Test acc: {test_acc*100:.2f}%')
 
-    print(f'Block: {block_i+1} | Train acc: {train_acc*100:.2f}% | Test acc: {test_acc*100:.2f}%')
-
-    return train_acc, test_acc
+    return test_acc
