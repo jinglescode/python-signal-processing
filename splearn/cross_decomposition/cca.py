@@ -4,11 +4,12 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
 import functools
-from ..classes.classifier import Classifier
+# from ..classes.classifier import Classifier
 from .reference_frequencies import generate_reference_signals
 
 
-class CCA(Classifier):
+# class CCA(Classifier):
+class CCA():
     r"""
     Calculates the canonical correlation coefficient and
     corresponding weights which maximize a correlation coefficient

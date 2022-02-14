@@ -3,3 +3,5 @@ numpy
 scipy
 matplotlib
 sklearn
+pytorch-lightning
+torchmetrics
