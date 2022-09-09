@@ -50,3 +50,15 @@ class PyTorchDataset(Dataset):
         Shape: (6, 40) [# of blocks, # of targets]
         """
         return self.targets_frequencies
+
+class PyTorchDataset2Views(Dataset):
+    def __init__(self, data_view1, data_view2, targets):
+        self.data_view1 = data_view1.astype(np.float32)
+        self.data_view2 = data_view2.astype(np.float32)
+        self.targets = targets
+
+    def __getitem__(self, index):
+        return self.data_view1[index], self.data_view2[index], self.targets[index]
+
+    def __len__(self):
+        return len(self.data_view1)
