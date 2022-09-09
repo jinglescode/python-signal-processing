@@ -6,9 +6,8 @@ from typing import Tuple
 from splearn.data.pytorch_dataset import PyTorchDataset
 
 
-class HSSSVEP(PyTorchDataset):
+class Benchmark(PyTorchDataset):
     """
-    This is a private dataset.
     A Benchmark Dataset for SSVEP-Based Brain–Computer Interfaces
     Yijun Wang, Xiaogang Chen, Xiaorong Gao, Shangkai Gao
     https://ieeexplore.ieee.org/document/7740878
@@ -57,14 +56,12 @@ def _load_data(root, subject_id, verbose):
         this_target = np.array([target_id]*raw_data.shape[1])
         targets.extend(this_target)
     
+    data = np.array(data)
+    
     # Each trial started with a 0.5-s target cue. Subjects were asked to shift their gaze to the target as soon as possible. After the cue, all stimuli started to flicker on the screen concurrently for 5 s. Then, the screen was blank for 0.5 s before the next trial began. Each trial lasted 6 s in total.
     # We cut the signal off after 4 seconds
     # We start from 160, because 0.5s Cue + 0.14s (visual latency) as they use phase in stimulus presentation. 0.64*250 = 160
     # data = np.array(data)[:,:,160:1160]
-    # Alternatively, starts 0.5s after cue, this has provided better results
-    # data = np.array(data)[:,:,200:1200] 
-    data = np.array(data)[:,:,125:1125] 
-    
     targets = np.array(targets)
 
     channel_names = ['FP1','FPZ','FP2','AF3','AF4','F7','F5','F3','F1','FZ','F2','F4','F6','F8','FT7','FC5','FC3','FC1','FCz','FC2','FC4','FC6','FT8','T7','C5','C3','C1','Cz','C2','C4','C6','T8','M1','TP7','CP5','CP3','CP1','CPZ','CP2','CP4','CP6','TP8','M2','P7','P5','P3','P1','PZ','P2','P4','P6','P8','PO7','PO5','PO3','POz','PO4','PO6','PO8','CB1','O1','Oz','O2','CB2']

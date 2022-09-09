@@ -133,3 +133,6 @@ dmypy.json
 Thumbs.db
 
 _devt/
+tensorboard_logs/
+run_logs/
+experiments/

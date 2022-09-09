@@ -22,8 +22,7 @@ class SampleSSVEPData():
         path: str, default: None
             Path to ssvepdata.mat file
     Usage:
-            >>> from splearn.cross_decomposition.trca import TRCA
-            >>> from splearn.data.sample_ssvep import SampleSSVEPData
+            >>> from splearn.data import SampleSSVEPData
             >>> 
             >>> data = SampleSSVEPData()
             >>> eeg = data.get_data()

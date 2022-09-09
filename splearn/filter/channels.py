@@ -7,7 +7,11 @@ def pick_channels(data: np.ndarray,
                   verbose: bool = False) -> np.ndarray:
 
     picked_ch = pick_channels_mne(channel_names, selected_channels)
-    data = data[:,  picked_ch, :]
+
+    if len(data.shape) == 3:
+        data = data[:, picked_ch, :]
+    if len(data.shape) == 4:
+        data = data[:, :, picked_ch, :]
 
     if verbose:
         print('picking channels: channel_names',
@@ -24,7 +28,6 @@ def pick_channels_mne(ch_names, include, exclude=[], ordered=False):
     """Pick channels by names.
     Returns the indices of ``ch_names`` in ``include`` but not in ``exclude``.
     Taken from https://github.com/mne-tools/mne-python/blob/master/mne/io/pick.py
-
     Parameters
     ----------
     ch_names : list of str

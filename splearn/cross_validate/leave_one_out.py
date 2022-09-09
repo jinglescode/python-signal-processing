@@ -20,7 +20,7 @@ def leave_one_block_evaluation(classifier, X, Y, block_seq_labels=None):
     Usage:
         >>> from splearn.cross_decomposition.trca import TRCA
         >>> from splearn.data.sample_ssvep import SampleSSVEPData
-        >>> from splearn.cross_validate.leave_one_out import leave_one_block_evaluation
+        >>> from splearn.cross_validate.leave_one_out import block_evaluation
         >>> 
         >>> data = SampleSSVEPData()
         >>> eeg = data.get_data()
@@ -29,7 +29,7 @@ def leave_one_block_evaluation(classifier, X, Y, block_seq_labels=None):
         >>> print("labels.shape:", labels.shape)
         >>> 
         >>> trca_classifier = TRCA(sampling_rate=data.sampling_rate)
-        >>> test_accuracies = leave_one_block_evaluation(trca_classifier, eeg, labels)
+        >>> test_accuracies = block_evaluation(trca_classifier, X, Y, 0)
     """
 
     test_accuracies = []
