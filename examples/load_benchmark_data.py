@@ -35,7 +35,7 @@ def func_preprocessing(data):
     data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
-    start_t = 160
+    start_t = 35
     end_t = start_t + 250
     data_x = data_x[:,:,:,start_t:end_t]
     data.set_data(data_x)

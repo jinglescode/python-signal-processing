@@ -25,7 +25,7 @@ from splearn.cross_validate.leave_one_out import block_evaluation
 config = {
     "experiment_name": "trca_benchmark",
     "data": {
-        "load_subject_ids": np.arange(1,6), # get first 5 subjects
+        "load_subject_ids": np.arange(1,36), # get first 5 subjects
         "root": "../data/hsssvep",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
     },

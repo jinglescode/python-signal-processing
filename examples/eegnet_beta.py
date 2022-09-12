@@ -24,7 +24,7 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from splearn.data import MultipleSubjects, Benchmark
+from splearn.data import MultipleSubjects, Beta
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
@@ -33,11 +33,11 @@ from splearn.nn.models import CompactEEGNet
 from splearn.nn.base import LightningModelClassifier
 
 config = {
-    "experiment_name": "eegnet_benchmark",
+    "experiment_name": "eegnet_beta",
     "data": {
-        "load_subject_ids": np.arange(1,36),
-        "root": "../data/hsssvep",
-        "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "load_subject_ids": np.arange(1,71), # get first 5 subjects
+        "root": "../data/beta",
+        "selected_channels": ["PZ","PO3","PO5","PO4","PO6","POZ","O1","OZ","O2"],
     },
     "model": {
         "optimizer": "adamw",
@@ -51,7 +51,7 @@ config = {
         "batchsize": 256,
     },
     "testing": {
-        "test_subject_ids": np.arange(1,36),
+        "test_subject_ids": np.arange(1,71),
         "kfolds": np.arange(0,3),
     },
     "seed": 1234
@@ -69,14 +69,14 @@ def func_preprocessing(data):
     data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
-    start_t = 35
+    start_t = 0
     end_t = start_t + 250
     data_x = data_x[:,:,:,start_t:end_t]
     data.set_data(data_x)
 
 # load data
 data = MultipleSubjects(
-    dataset=Benchmark, 
+    dataset=Beta, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,

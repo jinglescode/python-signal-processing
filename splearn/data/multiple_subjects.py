@@ -108,4 +108,4 @@ class MultipleSubjects(PyTorchDataset):
         train_dataset = PyTorchDataset(X_train, y_train)
         val_dataset = PyTorchDataset(X_val, y_val)
 
-        return train_dataset, val_dataset, 
+        return train_dataset, val_dataset, test_dataset

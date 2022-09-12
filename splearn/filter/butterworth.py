@@ -11,7 +11,6 @@ def butter_bandpass_filter(signal, lowcut, highcut, sampling_rate, order=4, verb
     r"""
     Digital filter bandpass zero-phase implementation (filtfilt)
     Apply a digital filter forward and backward to a signal
-
     Args:
         signal : ndarray, shape (trial,channel,time)
             Input signal by trials in time domain
@@ -30,7 +29,7 @@ def butter_bandpass_filter(signal, lowcut, highcut, sampling_rate, order=4, verb
             Filter signal
     """
     sos = _butter_bandpass(lowcut, highcut, sampling_rate, order=order, output='sos')
-    y = sosfiltfilt(sos, signal, axis=2)
+    y = sosfiltfilt(sos, signal, axis=-1)
 
     if verbose:
         tmp_x = signal[0, 0]
@@ -65,7 +64,6 @@ def butter_bandpass_filter_signal_1d(signal, lowcut, highcut, sampling_rate, ord
     r"""
     Digital filter bandpass zero-phase implementation (filtfilt)
     Apply a digital filter forward and backward to a signal
-
     Args:
         signal : ndarray, shape (time,)
             Single input signal in time domain
@@ -135,7 +133,6 @@ def _butter_bandpass(lowcut, highcut, sampling_rate, order=4, output='ba'):
     r"""
     Create a Butterworth bandpass filter
     Design an Nth-order digital or analog Butterworth filter and return the filter coefficients.
-
     Args:
         lowcut : int
             Lower bound filter
@@ -400,4 +397,4 @@ def _butter_bandpass(lowcut, highcut, sampling_rate, order=4, output='ba'):
 #         plot=True,
 #         plot_xlim=[0,40]
 #     )
-#     print('signal_3d_filtered.shape', signal_3d_filtered.shape)
+#     print('signal_3d_filtered.shape', signal_3d_filtered.shape)s
