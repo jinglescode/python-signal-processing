@@ -35,7 +35,7 @@ config = {
     "experiment_name": "siamese_eegnet_beta",
     "data": {
         "load_subject_ids": np.arange(1,71),
-        "root": "../data/hsssvep",
+        "root": "../data/beta",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
         "duration": 1,
     },
