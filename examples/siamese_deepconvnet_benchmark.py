@@ -24,18 +24,18 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from splearn.data import MultipleSubjects, Beta, PyTorchDataset, PyTorchDataset2Views
+from splearn.data import MultipleSubjects, Benchmark, PyTorchDataset, PyTorchDataset2Views
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
 from splearn.filter.channels import pick_channels
-from splearn.nn.models import CompactEEGNet, SSLClassifier
+from splearn.nn.models import DeepConvNet, SSLClassifier
 
 config = {
-    "experiment_name": "siamese_eegnet_beta",
+    "experiment_name": "siamese_deepconvnet_benchmark",
     "data": {
-        "load_subject_ids": np.arange(1,71),
-        "root": "../data/beta",
+        "load_subject_ids": np.arange(1,36),
+        "root": "../data/hsssvep",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
         "duration": 1,
     },
@@ -53,7 +53,7 @@ config = {
         "batchsize": 256,
     },
     "testing": {
-        "test_subject_ids": np.arange(1,71),
+        "test_subject_ids": np.arange(1,36),
         "kfolds": np.arange(0,3),
     },
     "seed": 1234
@@ -126,7 +126,7 @@ def leave_one_subject_out(data, **kwargs):
 
 # load data
 data = MultipleSubjects(
-    dataset=Beta, 
+    dataset=Benchmark, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,
@@ -161,7 +161,7 @@ def train_test_subject(data, config, test_subject_id, kfold_k=0):
 
     ## init model
 
-    eegnet = CompactEEGNet(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length)
+    base_model = DeepConvNet(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length, pool_time_stride=1)
 
     model = SSLClassifier(
         optimizer=config.model.optimizer,
@@ -171,7 +171,7 @@ def train_test_subject(data, config, test_subject_id, kfold_k=0):
     )
     
     model.build_model(
-        model=eegnet,
+        model=base_model,
         projection_size=config.model.projection_size,
         num_proj_mlp_layers=config.model.num_proj_mlp_layers
     )

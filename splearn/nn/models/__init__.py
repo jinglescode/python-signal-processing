@@ -6,3 +6,4 @@ from .Multitask import MultitaskSSVEP
 from .Multitask import MultitaskSSVEPClassifier
 from .ConvCA import ConvCA
 from .ConvCA import ConvCaLighting
+from .DeepConvNet import DeepConvNet
