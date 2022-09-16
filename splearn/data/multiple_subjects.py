@@ -40,7 +40,7 @@ class MultipleSubjects(PyTorchDataset):
                 self.targets = np.zeros((len(subject_ids), sub_targets.shape[0]))
                 self.sampling_rate = subject_dataset.sampling_rate
                 self.stimulus_frequencies = subject_dataset.stimulus_frequencies
-                self.channel_names = subject_dataset.channel_names
+                self.channel_names = subject_dataset.channel_names if hasattr(subject_dataset, 'channel_names') else None
                 is_first = False
 
             self.data[subject_i, :, :, :] = sub_data
@@ -66,15 +66,12 @@ class MultipleSubjects(PyTorchDataset):
         split_data = skf.split(X, y)
 
         for idx, value in enumerate(split_data):
-
             if k != idx:
                 continue
             else:
                 train_index, test_index = value
-
                 X_train, X_test = X[train_index], X[test_index]
                 y_train, y_test = y[train_index], y[test_index]
-
                 return (X_train, y_train), (X_test, y_test)
     
     def get_train_val_test_dataset(self, **kwargs):
@@ -87,7 +84,7 @@ class MultipleSubjects(PyTorchDataset):
         
         test_subject_id = kwargs["test_subject_id"] if "test_subject_id" in kwargs else 1
         kfold_k = kwargs["kfold_k"] if "kfold_k" in kwargs else 0
-        kfold_split = kwargs["kfold_split"] if "kfold_split" in kwargs else 3            
+        kfold_split = kwargs["kfold_split"] if "kfold_split" in kwargs else 3
 
         # get test data
         # test_sub_idx = self.subject_ids.index(test_subject_id)
@@ -109,3 +106,22 @@ class MultipleSubjects(PyTorchDataset):
         val_dataset = PyTorchDataset(X_val, y_val)
 
         return train_dataset, val_dataset, test_dataset
+
+    def get_train_test_dataset(self, **kwargs):
+
+        test_subject_id = kwargs["test_subject_id"] if "test_subject_id" in kwargs else 1
+
+        # get test data
+        test_sub_idx = np.where(self.subject_ids == test_subject_id)[0][0]
+        selected_subject_data = self.data[test_sub_idx]
+        selected_subject_targets = self.targets[test_sub_idx]
+        test_dataset = PyTorchDataset(selected_subject_data, selected_subject_targets)
+
+        # get train data
+        indices = np.arange(self.data.shape[0])
+        X_train = self.data[indices!=test_sub_idx, :, :, :]
+        X_train = X_train.reshape((X_train.shape[0]*X_train.shape[1], X_train.shape[2], X_train.shape[3]))
+        y_train = self.targets[indices!=test_sub_idx, :]
+        y_train = y_train.reshape((y_train.shape[0]*y_train.shape[1]))
+        train_dataset = PyTorchDataset(X_train, y_train)
+        return train_dataset, test_dataset

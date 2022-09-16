@@ -6,67 +6,59 @@ path = cwd
 sys.path.append(path)
 
 # imports
-import numpy as np
-from torch.utils.data import DataLoader
-
-from splearn.data import MultipleSubjects, Benchmark
-from splearn.utils import Config
-from splearn.filter.butterworth import butter_bandpass_filter
-from splearn.filter.notch import notch_filter
-from splearn.filter.channels import pick_channels
+from splearn.data import Benchmark
 
 # config
-
-config = {
-    "data": {
-        "load_subject_ids": np.arange(1,4), # get subject #1, #2 and #3
-        "root": "../data/hsssvep",
-        "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
-    },
-    "training": {
-        "batchsize": 256,
-    },
-}
-config = Config(config)
-
-# define custom preprocessing steps
-def func_preprocessing(data):
-    data_x = data.data
-    data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
-    data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
-    data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
-    start_t = 35
-    end_t = start_t + 250
-    data_x = data_x[:,:,:,start_t:end_t]
-    data.set_data(data_x)
+load_subject_id = 1
+path_to_dataset = "../data/hsssvep"
 
 # load data
-data = MultipleSubjects(
-    dataset=Benchmark, 
-    root=os.path.join(path,config.data.root), 
-    subject_ids=config.data.load_subject_ids, 
-    func_preprocessing=func_preprocessing,
-    verbose=True, 
-)
+subject_dataset = Benchmark(root=path_to_dataset, subject_id=load_subject_id)
 
-# display data info
-num_channel = data.data.shape[2]
-signal_length = data.data.shape[3]
-print("Final data shape:", data.data.shape)
-print("num of subjects", data.data.shape[0])
-print("num channels: ", num_channel)
-print("signal length: ", signal_length)
+# display
+print("About the data:")
+print("sample rate:", subject_dataset.sample_rate)
+print("data shape:", subject_dataset.data.shape)
+print("targets shape:", subject_dataset.targets.shape)
+print("stimulus frequencies:", subject_dataset.stimulus_frequencies)
+print("targets frequencies:", subject_dataset.targets_frequencies)
+print("targets:", subject_dataset.targets)
 
-def prepare_dataloaders(test_subject_id, kfold_split=3, kfold_k=0):
-
-    train_dataset, val_dataset, test_dataset = data.get_train_val_test_dataset(test_subject_id=test_subject_id, kfold_split=kfold_split, kfold_k=kfold_k)
-    train_loader = DataLoader(train_dataset, batch_size=config.training.batchsize, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=config.training.batchsize, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
-
-    print("train_loader shape", train_loader.dataset.data.shape)
-    print("val_loader shape", val_loader.dataset.data.shape)
-    print("test_loader shape", test_loader.dataset.data.shape)
-
-test_subject_id = 1
-prepare_dataloaders(test_subject_id)
+# expected output:
+# ```
+# About the data:
+# sample rate: 1000
+# data shape: (240, 64, 1500)
+# targets shape: (240,)
+# stimulus frequencies: [ 8.   9.  10.  11.  12.  13.  14.  15.   8.2  9.2 10.2 11.2 12.2 13.2
+#  14.2 15.2  8.4  9.4 10.4 11.4 12.4 13.4 14.4 15.4  8.6  9.6 10.6 11.6
+#  12.6 13.6 14.6 15.6  8.8  9.8 10.8 11.8 12.8 13.8 14.8 15.8]
+# targets frequencies: [ 8.   8.   8.   8.   8.   8.   9.   9.   9.   9.   9.   9.  10.  10.
+#  10.  10.  10.  10.  11.  11.  11.  11.  11.  11.  12.  12.  12.  12.
+#  12.  12.  13.  13.  13.  13.  13.  13.  14.  14.  14.  14.  14.  14.
+#  15.  15.  15.  15.  15.  15.   8.2  8.2  8.2  8.2  8.2  8.2  9.2  9.2
+#   9.2  9.2  9.2  9.2 10.2 10.2 10.2 10.2 10.2 10.2 11.2 11.2 11.2 11.2
+#  11.2 11.2 12.2 12.2 12.2 12.2 12.2 12.2 13.2 13.2 13.2 13.2 13.2 13.2
+#  14.2 14.2 14.2 14.2 14.2 14.2 15.2 15.2 15.2 15.2 15.2 15.2  8.4  8.4
+#   8.4  8.4  8.4  8.4  9.4  9.4  9.4  9.4  9.4  9.4 10.4 10.4 10.4 10.4
+#  10.4 10.4 11.4 11.4 11.4 11.4 11.4 11.4 12.4 12.4 12.4 12.4 12.4 12.4
+#  13.4 13.4 13.4 13.4 13.4 13.4 14.4 14.4 14.4 14.4 14.4 14.4 15.4 15.4
+#  15.4 15.4 15.4 15.4  8.6  8.6  8.6  8.6  8.6  8.6  9.6  9.6  9.6  9.6
+#   9.6  9.6 10.6 10.6 10.6 10.6 10.6 10.6 11.6 11.6 11.6 11.6 11.6 11.6
+#  12.6 12.6 12.6 12.6 12.6 12.6 13.6 13.6 13.6 13.6 13.6 13.6 14.6 14.6
+#  14.6 14.6 14.6 14.6 15.6 15.6 15.6 15.6 15.6 15.6  8.8  8.8  8.8  8.8
+#   8.8  8.8  9.8  9.8  9.8  9.8  9.8  9.8 10.8 10.8 10.8 10.8 10.8 10.8
+#  11.8 11.8 11.8 11.8 11.8 11.8 12.8 12.8 12.8 12.8 12.8 12.8 13.8 13.8
+#  13.8 13.8 13.8 13.8 14.8 14.8 14.8 14.8 14.8 14.8 15.8 15.8 15.8 15.8
+#  15.8 15.8]
+# targets: [ 0  0  0  0  0  0  1  1  1  1  1  1  2  2  2  2  2  2  3  3  3  3  3  3
+#   4  4  4  4  4  4  5  5  5  5  5  5  6  6  6  6  6  6  7  7  7  7  7  7
+#   8  8  8  8  8  8  9  9  9  9  9  9 10 10 10 10 10 10 11 11 11 11 11 11
+#  12 12 12 12 12 12 13 13 13 13 13 13 14 14 14 14 14 14 15 15 15 15 15 15
+#  16 16 16 16 16 16 17 17 17 17 17 17 18 18 18 18 18 18 19 19 19 19 19 19
+#  20 20 20 20 20 20 21 21 21 21 21 21 22 22 22 22 22 22 23 23 23 23 23 23
+#  24 24 24 24 24 24 25 25 25 25 25 25 26 26 26 26 26 26 27 27 27 27 27 27
+#  28 28 28 28 28 28 29 29 29 29 29 29 30 30 30 30 30 30 31 31 31 31 31 31
+#  32 32 32 32 32 32 33 33 33 33 33 33 34 34 34 34 34 34 35 35 35 35 35 35
+#  36 36 36 36 36 36 37 37 37 37 37 37 38 38 38 38 38 38 39 39 39 39 39 39]
+# ```

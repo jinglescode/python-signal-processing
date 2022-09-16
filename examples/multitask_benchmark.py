@@ -29,11 +29,11 @@ from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
 from splearn.filter.channels import pick_channels
-from splearn.nn.models import CompactEEGNet
+from splearn.nn.models import MultitaskSSVEPClassifier
 from splearn.nn.base import LightningModelClassifier
 
 config = {
-    "experiment_name": "eegnet_benchmark_nokfold",
+    "experiment_name": "multitask_benchmark_nokfold",
     "data": {
         "load_subject_ids": np.arange(1,36),
         "root": "../data/hsssvep",
@@ -101,10 +101,11 @@ def train_test_subject_kfold(data, config, test_subject_id, kfold_k=0):
     train_dataset, test_dataset = data.get_train_test_dataset(test_subject_id=test_subject_id)
     train_loader = DataLoader(train_dataset, batch_size=config.training.batchsize, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
+    loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
 
     ## init model
 
-    base_model = CompactEEGNet(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length)
+    eegnet = MultitaskSSVEPClassifier(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length)
 
     model = LightningModelClassifier(
         optimizer=config.model.optimizer,
@@ -113,7 +114,7 @@ def train_test_subject_kfold(data, config, test_subject_id, kfold_k=0):
         scheduler_warmup_epochs=config.training.num_warmup_epochs,
     )
     
-    model.build_model(model=base_model)
+    model.build_model(model=eegnet)
 
     ## train
 

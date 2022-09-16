@@ -35,9 +35,10 @@ from splearn.nn.base import LightningModelClassifier
 config = {
     "experiment_name": "tcnn_benchmark",
     "data": {
-        "load_subject_ids": np.arange(1,36), # get first 5 subjects
+        "load_subject_ids": np.arange(1,36),
         "root": "../data/hsssvep",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "duration": 1,
     },
     "model": {
         "optimizer": "adamw",
@@ -69,8 +70,8 @@ def func_preprocessing(data):
     data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
-    start_t = 160
-    end_t = start_t + 250
+    start_t = 35
+    end_t = start_t + (config.data.duration * data.sampling_rate)
     data_x = data_x[:,:,:,start_t:end_t]
     data.set_data(data_x)
 
@@ -84,7 +85,7 @@ data = MultipleSubjects(
 )
 
 num_channel = data.data.shape[2]
-num_classes = 40
+num_classes = data.stimulus_frequencies.shape[0]
 signal_length = data.data.shape[3]
 
 

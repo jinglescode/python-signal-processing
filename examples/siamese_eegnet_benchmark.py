@@ -37,6 +37,7 @@ config = {
         "load_subject_ids": np.arange(1,36),
         "root": "../data/hsssvep",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "duration": 1,
     },
     "model": {
         "optimizer": "adamw",
@@ -52,7 +53,7 @@ config = {
         "batchsize": 256,
     },
     "testing": {
-        "test_subject_ids": np.arange(1,2),
+        "test_subject_ids": np.arange(1,36),
         "kfolds": np.arange(0,3),
     },
     "seed": 1234
@@ -71,7 +72,7 @@ def func_preprocessing(data):
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
     start_t = 35
-    end_t = start_t + 250
+    end_t = start_t + (config.data.duration * data.sampling_rate)
     data_x = data_x[:,:,:,start_t:end_t]
     data.set_data(data_x)
 
@@ -89,8 +90,6 @@ def leave_one_subject_out(data, **kwargs):
     test_dataset = PyTorchDataset(selected_subject_data, selected_subject_targets)
 
     # get train val data
-    indices = np.arange(data.data.shape[0])
-    train_val_data = data.data[indices!=test_sub_idx, :, :, :]
     
     num_views = data.data.shape[0]-1
 
@@ -138,7 +137,7 @@ data = MultipleSubjects(
 print("Final data shape:", data.data.shape)
 
 num_channel = data.data.shape[2]
-num_classes = 40
+num_classes = data.stimulus_frequencies.shape[0]
 signal_length = data.data.shape[3]
 
 
@@ -213,15 +212,15 @@ def k_fold_train_test_all_subjects():
             test_results_acc[test_subject_id] = []
         
         # k-fold
-        for k in config.testing.kfolds:
-            test_acc = train_test_subject(data, config, test_subject_id, kfold_k=k)
-            test_results_acc[test_subject_id].append(test_acc)
-        mean_acc = np.mean(test_results_acc[test_subject_id])
-        means.append(mean_acc)
+        # for k in config.testing.kfolds:
+        #     test_acc = train_test_subject(data, config, test_subject_id, kfold_k=k)
+        #     test_results_acc[test_subject_id].append(test_acc)
+        # mean_acc = np.mean(test_results_acc[test_subject_id])
+        # means.append(mean_acc)
 
         # one fold:
-        # mean_acc = train_test_subject(data, config, test_subject_id)
-        # means.append(mean_acc)
+        mean_acc = train_test_subject(data, config, test_subject_id)
+        means.append(mean_acc)
         
         this_result = {
             "test_subject_id": test_subject_id,

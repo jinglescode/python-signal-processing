@@ -17,7 +17,6 @@ class Beta(PyTorchDataset):
     """
     def __init__(self, root: str, subject_id: int, verbose: bool = False, file_prefix='neuroscan_S') -> None:
         self.root = root
-        self.sample_rate = 1000
         self.data, self.targets, self.channel_names, self.stimulus_frequencies = _load_data(self.root, subject_id, verbose, file_prefix)        
         self.sampling_rate = 250
         self.targets_frequencies = self.stimulus_frequencies[self.targets]

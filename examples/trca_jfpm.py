@@ -14,20 +14,18 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-from splearn.data import MultipleSubjects, Benchmark
+from splearn.data import MultipleSubjects, JFPM
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
-from splearn.filter.channels import pick_channels
 from splearn.cross_decomposition.trca import TRCA
 from splearn.cross_validate.leave_one_out import block_evaluation
 
 config = {
-    "experiment_name": "trcaEnsemble_benchmark",
+    "experiment_name": "trcaEnsemble_jfpm",
     "data": {
-        "load_subject_ids": np.arange(1,36),
-        "root": "../data/hsssvep",
-        "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "load_subject_ids": np.arange(1,11),
+        "root": "../data/jfpm",
         "duration": 1,
     },
     "trca": {
@@ -43,7 +41,6 @@ config = Config(config)
 # define custom preprocessing steps
 def func_preprocessing(data):
     data_x = data.data
-    data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
     start_t = 35
@@ -53,7 +50,7 @@ def func_preprocessing(data):
 
 # load data
 data = MultipleSubjects(
-    dataset=Benchmark, 
+    dataset=JFPM, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,

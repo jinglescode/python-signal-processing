@@ -8,7 +8,8 @@ This repository contains tutorials on understanding and applying signal processi
 
 - [Tutorials](#tutorials)
 - [Getting Started](#getting-started)
-- [Disclaimer on Datasets](#disclaimer-on-datasets)
+- [Datasets](#datasets)
+- [Methods](#methods)
 
 --- 
 
@@ -65,9 +66,7 @@ git clone https://github.com/jinglescode/python-signal-processing.git
 pip install -r requirements.txt
 ```
 
-### Dependencies
-
-See [requirements.txt](https://github.com/jinglescode/python-signal-processing/tree/main/requirements.txt).
+Dependencies, see [requirements.txt](https://github.com/jinglescode/python-signal-processing/tree/main/requirements.txt).
 
 ### Usage
 
@@ -96,10 +95,34 @@ signal_2d_filtered = butter_bandpass(
 )
 ```
 
+See [examples](https://github.com/jinglescode/python-signal-processing/tree/main/examples) for more examples.
+
 ---
 
-## Disclaimer on Datasets
+## Datasets
+
+Some dataset extraction code are provided, see [examples](https://github.com/jinglescode/python-signal-processing/tree/main/examples) to see how to use them.
+
+- [BETA: A Large Benchmark Database Toward SSVEP-BCI Application](https://www.frontiersin.org/articles/10.3389/fnins.2020.00627/full)
+- [A Benchmark Dataset for SSVEP-Based Brain–Computer Interfaces](https://ieeexplore.ieee.org/document/7740878)
+- [A Comparison Study of Canonical Correlation Analysis Based Methods for Detecting Steady-State Visual Evoked Potentials](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0140703)
+- [EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy.](https://academic.oup.com/gigascience/article/8/5/giz002/5304369)
+
+#### Disclaimer on Datasets
 
 We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
 
 If you're a dataset owner and wish to update any part of it (description, citation, etc.), or do not want your dataset to be included in this library, please get in touch through a GitHub issue. Thanks for your contribution to the ML community!
+
+## Methods
+
+A few methods have been included as they have been tested (within my limited time). They are by no means recommended or exhaustive.
+
+- [Compact-CNN](https://arxiv.org/pdf/1803.04566.pdf)
+- [Canonical Correlation Analysis (CCA)](http://en.wikipedia.org/wiki/Canonical_correlation)
+- [Task-Related Component Analysis (TRCA)](https://ieeexplore.ieee.org/document/7904641)
+- [Multi-Task SSVEP](https://jinglescode.github.io/ssvep-multi-task-learning/)
+- [Convolutional correlation analysis for enhancing the performance of SSVEP-based brain-computer interface](https://ieeexplore.ieee.org/abstract/document/9261605/)
+- [Time-domain-based CNN method (tCNN)](https://ieeexplore.ieee.org/abstract/document/9632600)
+
+If you wish to include your model, you are welcome to do so via pull request. Do check out how other models are implemented for reference. PyTorch models and sklearn/numpy methods only.

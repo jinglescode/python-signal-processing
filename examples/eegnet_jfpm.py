@@ -24,20 +24,18 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from splearn.data import MultipleSubjects, Benchmark
+from splearn.data import MultipleSubjects, JFPM
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
-from splearn.filter.channels import pick_channels
 from splearn.nn.models import CompactEEGNet
 from splearn.nn.base import LightningModelClassifier
 
 config = {
-    "experiment_name": "eegnet_benchmark_nokfold",
+    "experiment_name": "eegnet_jfpm_nokfold",
     "data": {
-        "load_subject_ids": np.arange(1,36),
-        "root": "../data/hsssvep",
-        "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "load_subject_ids": np.arange(1,11),
+        "root": "../data/jfpm",
         "duration": 1,
     },
     "model": {
@@ -52,7 +50,7 @@ config = {
         "batchsize": 256,
     },
     "testing": {
-        "test_subject_ids": np.arange(1,36),
+        "test_subject_ids": np.arange(1,11),
         "kfolds": np.arange(0,3),
     },
     "seed": 1234
@@ -67,7 +65,6 @@ seed_everything(config.seed)
 # define custom preprocessing steps
 def func_preprocessing(data):
     data_x = data.data
-    data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
     start_t = 35
@@ -77,7 +74,7 @@ def func_preprocessing(data):
 
 # load data
 data = MultipleSubjects(
-    dataset=Benchmark, 
+    dataset=JFPM, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,
@@ -89,10 +86,16 @@ num_classes = data.stimulus_frequencies.shape[0]
 signal_length = data.data.shape[3]
 
 
+test_subject_id = 1
+train_dataset, test_dataset = data.get_train_test_dataset(test_subject_id=test_subject_id)
+train_loader = DataLoader(train_dataset, batch_size=config.training.batchsize, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
+print("train_loader", train_loader.dataset.data.shape, train_loader.dataset.targets.shape)
+print("test_loader", test_loader.dataset.data.shape, test_loader.dataset.targets.shape)
+
 def train_test_subject_kfold(data, config, test_subject_id, kfold_k=0):
     
     ## init data
-    # train_dataset, val_dataset, test_dataset = leave_one_subject_out(data, test_subject_id=test_subject_id, kfold_k=kfold_k)
     # train_dataset, val_dataset, test_dataset = data.get_train_val_test_dataset(test_subject_id=test_subject_id, kfold_k=kfold_k)
     # train_loader = DataLoader(train_dataset, batch_size=config.training.batchsize, shuffle=True)
     # val_loader = DataLoader(val_dataset, batch_size=config.training.batchsize, shuffle=False)
@@ -147,7 +150,7 @@ def k_fold_train_test_all_subjects():
         
         if test_subject_id not in test_results_acc:
             test_results_acc[test_subject_id] = []
-            
+        
         # k-fold
         # for k in config.testing.kfolds:
         #     test_acc = train_test_subject_kfold(data, config, test_subject_id, kfold_k=k)

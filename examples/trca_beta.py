@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-from splearn.data import MultipleSubjects, Benchmark
+from splearn.data import MultipleSubjects, Beta
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
@@ -23,10 +23,10 @@ from splearn.cross_decomposition.trca import TRCA
 from splearn.cross_validate.leave_one_out import block_evaluation
 
 config = {
-    "experiment_name": "trcaEnsemble_benchmark",
+    "experiment_name": "trcaEnsemble_beta",
     "data": {
-        "load_subject_ids": np.arange(1,36),
-        "root": "../data/hsssvep",
+        "load_subject_ids": np.arange(1,71),
+        "root": "../data/beta",
         "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
         "duration": 1,
     },
@@ -53,7 +53,7 @@ def func_preprocessing(data):
 
 # load data
 data = MultipleSubjects(
-    dataset=Benchmark, 
+    dataset=Beta, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,

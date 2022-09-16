@@ -24,20 +24,19 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from splearn.data import MultipleSubjects, Benchmark
+from splearn.data import MultipleSubjects, JFPM
 from splearn.utils import Logger, Config
 from splearn.filter.butterworth import butter_bandpass_filter
 from splearn.filter.notch import notch_filter
 from splearn.filter.channels import pick_channels
-from splearn.nn.models import CompactEEGNet
+from splearn.nn.models import MultitaskSSVEPClassifier
 from splearn.nn.base import LightningModelClassifier
 
 config = {
-    "experiment_name": "eegnet_benchmark_nokfold",
+    "experiment_name": "multitask_jfpm_nokfold",
     "data": {
-        "load_subject_ids": np.arange(1,36),
-        "root": "../data/hsssvep",
-        "selected_channels": ["PZ", "PO5", "PO3", "POz", "PO4", "PO6", "O1", "Oz", "O2"],
+        "load_subject_ids": np.arange(1,11),
+        "root": "../data/jfpm",
         "duration": 1,
     },
     "model": {
@@ -52,7 +51,7 @@ config = {
         "batchsize": 256,
     },
     "testing": {
-        "test_subject_ids": np.arange(1,36),
+        "test_subject_ids": np.arange(1,11),
         "kfolds": np.arange(0,3),
     },
     "seed": 1234
@@ -67,7 +66,6 @@ seed_everything(config.seed)
 # define custom preprocessing steps
 def func_preprocessing(data):
     data_x = data.data
-    data_x = pick_channels(data_x, channel_names=data.channel_names, selected_channels=config.data.selected_channels)
     data_x = notch_filter(data_x, sampling_rate=data.sampling_rate, notch_freq=50.0)
     data_x = butter_bandpass_filter(data_x, lowcut=7, highcut=90, sampling_rate=data.sampling_rate, order=6)
     start_t = 35
@@ -77,7 +75,7 @@ def func_preprocessing(data):
 
 # load data
 data = MultipleSubjects(
-    dataset=Benchmark, 
+    dataset=JFPM, 
     root=os.path.join(path,config.data.root), 
     subject_ids=config.data.load_subject_ids, 
     func_preprocessing=func_preprocessing,
@@ -101,10 +99,11 @@ def train_test_subject_kfold(data, config, test_subject_id, kfold_k=0):
     train_dataset, test_dataset = data.get_train_test_dataset(test_subject_id=test_subject_id)
     train_loader = DataLoader(train_dataset, batch_size=config.training.batchsize, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
+    loader = DataLoader(test_dataset, batch_size=config.training.batchsize, shuffle=False)
 
     ## init model
 
-    base_model = CompactEEGNet(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length)
+    eegnet = MultitaskSSVEPClassifier(num_channel=num_channel, num_classes=num_classes, signal_length=signal_length)
 
     model = LightningModelClassifier(
         optimizer=config.model.optimizer,
@@ -113,7 +112,7 @@ def train_test_subject_kfold(data, config, test_subject_id, kfold_k=0):
         scheduler_warmup_epochs=config.training.num_warmup_epochs,
     )
     
-    model.build_model(model=base_model)
+    model.build_model(model=eegnet)
 
     ## train
 

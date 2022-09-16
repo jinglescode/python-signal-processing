@@ -9,6 +9,7 @@ from splearn.nn.modules.conv2d import SeparableConv2d
 class CompactEEGNet(nn.Module):
     """
     EEGNet: Compact Convolutional Neural Network (Compact-CNN)
+    Compact Convolutional Neural Networks for Classification of Asynchronous Steady-state Visual Evoked Potentials
     https://arxiv.org/pdf/1803.04566.pdf
     """
     def __init__(self, num_channel=10, num_classes=4, signal_length=1000, f1=96, f2=96, d=1):
